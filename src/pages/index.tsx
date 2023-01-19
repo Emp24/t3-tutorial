@@ -4,12 +4,15 @@ import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "../utils/api";
+import { useEffect } from "react";
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
   const createBuildMutation = api.builds.createBuild.useMutation();
   const matchUp = "Let's try this shit";
   const build = "if this shit works I'm a god";
+  const { data } = api.builds.listBuilds.useQuery();
+
   const submitMutation = async () => {
     await createBuildMutation.mutateAsync({
       matchUp,
@@ -25,6 +28,16 @@ const Home: NextPage = () => {
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <button onClick={() => submitMutation()}> Name it fuck</button>
+        <p>
+          {data?.map((build) => {
+            return (
+              <div key={build.id}>
+                <p>{build.matchUp}</p>
+                <p>{build.build}</p>
+              </div>
+            );
+          })}
+        </p>
       </main>
     </>
   );

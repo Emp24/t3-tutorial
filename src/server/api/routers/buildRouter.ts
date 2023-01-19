@@ -1,5 +1,6 @@
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
+import { contextProps } from "@trpc/react-query/shared";
 import { z } from "zod";
 
 export const buildsRouter = createTRPCRouter({
@@ -20,6 +21,13 @@ export const buildsRouter = createTRPCRouter({
 
       return build;
     }),
+
+  listBuilds: publicProcedure.query(async ({ ctx }) => {
+    const builds = await ctx.prisma.buildOrder.findMany({
+      select: { build: true, matchUp: true, id: true },
+    });
+    return builds;
+  }),
 
   //   getAll: publicProcedure.query(({ ctx }) => {
   //     return ctx.pr1isma.example.findMany();
